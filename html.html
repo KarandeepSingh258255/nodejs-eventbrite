@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Events</title>
+  <style>
+
+    body {
+      margin: 0;
+      font-family: "Georgia", fantasy;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 48px auto;
+      padding: 0 20px;
+    }
+    .hero {
+      background: var(--card);
+      border: 2px solid var(--ink);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 44px);
+    }
+    .hero p {
+      margin: 0;
+      font-size: 18px;
+    }
+    .events {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 2px solid var(--ink);
+      padding: 16px;
+      box-shadow: 6px 6px 0 var(--ink);
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+    .meta {
+      font-size: 14px;
+      margin: 0 0 10px;
+    }
+    .link {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 2px solid var(--accent);
+    }
+    .empty {
+      background: #fff;
+      border: 2px dashed var(--ink);
+      padding: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>Events</h1>
+      <p>Live events auto-refresh every minute.</p>
+    </div>
+
+    <div id="events" class="events"></div>
+  </div>
+  <script>
+    const POLL_MS = 60000;
+
+    function formatLocal(eventTime) {
+      if (!eventTime?.local || !eventTime?.timezone) return 'TBD';
+      return `${eventTime.local} (${eventTime.timezone})`;
+    }
+
+    function renderEvents(events) {
+      const container = document.getElementById('events');
+      if (!events.length) {
+        container.innerHTML = '<div class="empty">No published events yet.</div>';
+        return;
+      }
+      container.innerHTML = events.map((event) => {
+        const start = formatLocal(event.start);
+        const end = formatLocal(event.end);
+        const name = event.name || 'Untitled Event';
+        const url = event.url || '#';
+        return `
+          <div class="card">
+            <h3>${name}</h3>
+            <p class="meta">Start: ${start}</p>
+            <p class="meta">End: ${end}</p>
+            <a class="link" href="${url}" target="_blank" rel="noopener">View on Eventbrite</a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function fetchEvents() {
+      try {
+        const res = await fetch('/events');
+        if (!res.ok) throw new Error('Failed to load events');
+        const data = await res.json();
+        renderEvents(data.events || []);
+      } catch (error) {
+        const container = document.getElementById('events');
+        container.innerHTML = '<div class="empty">Error loading events.</div>';
+      }
+    }
+
+    fetchEvents();
+    setInterval(fetchEvents, POLL_MS);
+  </script>
+</body>
+</html>
