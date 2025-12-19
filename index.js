@@ -2,6 +2,9 @@
 require('dotenv').config();
 // Import the Axios library for making HTTP requests
 const axios = require('axios');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 // Function to retrieve a list of organizations associated with the user
 async function getOrganizations(){
@@ -16,6 +19,49 @@ async function getOrganizations(){
     } catch(error) {
         console.error('error', error); // Logging any errors encountered
     }
+}
+
+// Function to retrieve published (live) events for an organization
+async function getPublishedEvents(organizationId){
+    try {
+        const events = await axios.get(`https://www.eventbriteapi.com/v3/organizations/${organizationId}/events/`, {
+            params: {
+                status: 'live',
+            },
+            headers: {
+                'Authorization': `Bearer ${process.env.API_KEY}`
+            }
+        });
+        return events.data;
+    } catch(error) {
+        console.error('error', error);
+    }
+}
+
+// Function to retrieve published events across all organizations
+async function getAllPublishedEvents(){
+    const organizations = await getOrganizations();
+    if (!organizations?.organizations?.length) {
+        throw new Error('No organizations returned; check auth token and API response.');
+    }
+    const allEvents = [];
+    for (const org of organizations.organizations) {
+        const publishedEvents = await getPublishedEvents(org.id);
+        if (publishedEvents?.events?.length) {
+            for (const event of publishedEvents.events) {
+                allEvents.push({
+                    id: event.id,
+                    name: event.name?.text,
+                    url: event.url,
+                    status: event.status,
+                    start: event.start,
+                    end: event.end,
+                    organization_id: event.organization_id,
+                });
+            }
+        }
+    }
+    return allEvents;
 }
 
 // Function to create a new event
@@ -92,18 +138,66 @@ async function assignTicketTiersToEvent(eventId, ticketTierId){
     }
 }
 
-// Self-invoking async function to run the above functions
-(async() => {
+async function runSetupFlow(){
     const organizations = await getOrganizations(); // Fetching organizations
-    // Uncomment the following lines to create an event and fetch its ID
-    // const eventCreated = await createEvent(organizations.organizations[0].id, 'Coding With Ado MeetUP', new Date(new Date().getTime() + 15 * 60000).toISOString().replace(/\.\d{3}/, ''), new Date(new Date().getTime() + 30 * 60000).toISOString().replace(/\.\d{3}/, ''), 'USD');
-    // console.log(eventCreated);
-
-    // Hardcoded event and ticket tier IDs for demonstration
-    const eventId = '772376728587'; // Replace with eventCreated.id for dynamic use
-    // const ticketTierCreated = await createTicketsTiers(eventId);
-    // console.log(ticketTierCreated);
-    const ticketTierId = '54746669'; // Replace with ticketTierCreated.inventory_tier.id for dynamic use
+    if (!organizations?.organizations?.length) {
+        throw new Error('No organizations returned; check auth token and API response.');
+    }
+    const existingEventId = process.env.EVENT_ID;
+    let eventId;
+    if (existingEventId) {
+        eventId = existingEventId;
+    } else {
+        const eventCreated = await createEvent(
+            organizations.organizations[0].id,
+            'Coding With Ado MeetUP',
+            new Date(new Date().getTime() + 15 * 60000).toISOString().replace(/\.\d{3}/, ''),
+            new Date(new Date().getTime() + 30 * 60000).toISOString().replace(/\.\d{3}/, ''),
+            'USD'
+        );
+        console.log(eventCreated);
+        eventId = eventCreated.id;
+    }
+    const ticketTierCreated = await createTicketsTiers(eventId);
+    console.log(ticketTierCreated);
+    const ticketTierId = ticketTierCreated.inventory_tier_id ?? ticketTierCreated.inventory_tier?.id;
     const ticketsAssigned = await assignTicketTiersToEvent(eventId, ticketTierId);
     console.log(ticketsAssigned); // Logging the result of ticket assignment
-})();
+}
+
+function startServer(){
+    const server = http.createServer(async (req, res) => {
+        try {
+            if (req.url === '/' || req.url === '/index.html') {
+                const htmlPath = path.join(__dirname, 'html.html');
+                const html = fs.readFileSync(htmlPath, 'utf-8');
+                res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.end(html);
+                return;
+            }
+            if (req.url === '/events') {
+                const events = await getAllPublishedEvents();
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ events }));
+                return;
+            }
+            res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+            res.end('Not Found');
+        } catch (error) {
+            res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ error: 'Server error' }));
+        }
+    });
+
+    const port = process.env.PORT || 3000;
+    server.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+    });
+}
+
+const mode = process.env.MODE || 'server';
+if (mode === 'setup') {
+    runSetupFlow().catch((error) => console.error('error', error));
+} else {
+    startServer();
+}
