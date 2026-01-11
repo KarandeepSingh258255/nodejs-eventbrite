@@ -6,6 +6,21 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+function buildAxiosError(context, error) {
+    if (error && error.response) {
+        const status = error.response.status;
+        const data = error.response.data;
+        const err = new Error(`${context} failed (status ${status})`);
+        err.status = status;
+        err.data = data;
+        return err;
+    }
+    if (error && error.request) {
+        return new Error(`${context} failed (no response)`);
+    }
+    return new Error(`${context} failed (${error?.message || 'unknown error'})`);
+}
+
 // Function to retrieve a list of organizations associated with the user
 async function getOrganizations(){
     try {
@@ -17,7 +32,7 @@ async function getOrganizations(){
         });
         return organizations.data; // Returning the response data
     } catch(error) {
-        console.error('error', error); // Logging any errors encountered
+        throw buildAxiosError('getOrganizations', error);
     }
 }
 
@@ -27,6 +42,7 @@ async function getPublishedEvents(organizationId){
         const events = await axios.get(`https://www.eventbriteapi.com/v3/organizations/${organizationId}/events/`, {
             params: {
                 status: 'live',
+                expand: 'logo,venue,organizer',
             },
             headers: {
                 'Authorization': `Bearer ${process.env.API_KEY}`
@@ -34,7 +50,24 @@ async function getPublishedEvents(organizationId){
         });
         return events.data;
     } catch(error) {
-        console.error('error', error);
+        throw buildAxiosError('getPublishedEvents', error);
+    }
+}
+
+// Function to retrieve a single event with expanded details
+async function getEventById(eventId) {
+    try {
+        const event = await axios.get(`https://www.eventbriteapi.com/v3/events/${eventId}/`, {
+            params: {
+                expand: 'organizer,venue,logo,category,subcategory',
+            },
+            headers: {
+                'Authorization': `Bearer ${process.env.API_KEY}`
+            }
+        });
+        return event.data;
+    } catch (error) {
+        throw buildAxiosError('getEventById', error);
     }
 }
 
@@ -57,6 +90,13 @@ async function getAllPublishedEvents(){
                     start: event.start,
                     end: event.end,
                     organization_id: event.organization_id,
+                    logo: event.logo,
+                    description: event.description,
+                    summary: event.summary,
+                    venue: event.venue,
+                    organizer: event.organizer,
+                    is_free: event.is_free,
+                    capacity: event.capacity,
                 });
             }
         }
@@ -168,17 +208,93 @@ async function runSetupFlow(){
 function startServer(){
     const server = http.createServer(async (req, res) => {
         try {
-            if (req.url === '/' || req.url === '/index.html') {
+            const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+            const pathname = url.pathname;
+
+            if (pathname === '/' || pathname === '/index.html') {
                 const htmlPath = path.join(__dirname, 'html.html');
                 const html = fs.readFileSync(htmlPath, 'utf-8');
                 res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
                 res.end(html);
                 return;
             }
-            if (req.url === '/events') {
-                const events = await getAllPublishedEvents();
+            if (pathname === '/event-single.html') {
+                const htmlPath = path.join(__dirname, 'event-single.html');
+                const html = fs.readFileSync(htmlPath, 'utf-8');
+                res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.end(html);
+                return;
+            }
+            if (pathname === '/events') {
+                try {
+                    const events = await getAllPublishedEvents();
+                    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                    res.end(JSON.stringify({ events }));
+                } catch (error) {
+                    const status = Number.isInteger(error?.status) ? error.status : 502;
+                    res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
+                    res.end(JSON.stringify({
+                        error: error?.message || 'Failed to load events',
+                        details: error?.data || null,
+                    }));
+                }
+                return;
+            }
+            if (pathname === '/event') {
+                const eventId = url.searchParams.get('eventId');
+                if (!eventId) {
+                    res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+                    res.end(JSON.stringify({ error: 'Missing eventId' }));
+                    return;
+                }
+                const event = await getEventById(eventId);
+                if (!event) {
+                    res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
+                    res.end(JSON.stringify({ error: 'Event not found' }));
+                    return;
+                }
                 res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-                res.end(JSON.stringify({ events }));
+                res.end(JSON.stringify({ event }));
+                return;
+            }
+            if (
+                pathname.startsWith('/css/') ||
+                pathname.startsWith('/js/') ||
+                pathname.startsWith('/images/') ||
+                pathname.startsWith('/fonts/')
+            ) {
+                const filePath = path.resolve(__dirname, `.${pathname}`);
+                if (!filePath.startsWith(__dirname)) {
+                    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+                    res.end('Forbidden');
+                    return;
+                }
+                if (!fs.existsSync(filePath)) {
+                    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+                    res.end('Not Found');
+                    return;
+                }
+                const ext = path.extname(filePath).toLowerCase();
+                const contentTypes = {
+                    '.css': 'text/css; charset=utf-8',
+                    '.js': 'application/javascript; charset=utf-8',
+                    '.png': 'image/png',
+                    '.jpg': 'image/jpeg',
+                    '.jpeg': 'image/jpeg',
+                    '.gif': 'image/gif',
+                    '.svg': 'image/svg+xml',
+                    '.webp': 'image/webp',
+                    '.ico': 'image/x-icon',
+                    '.woff': 'font/woff',
+                    '.woff2': 'font/woff2',
+                    '.ttf': 'font/ttf',
+                    '.eot': 'application/vnd.ms-fontobject',
+                    '.map': 'application/json; charset=utf-8',
+                };
+                const contentType = contentTypes[ext] || 'application/octet-stream';
+                const file = fs.readFileSync(filePath);
+                res.writeHead(200, { 'Content-Type': contentType });
+                res.end(file);
                 return;
             }
             res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });

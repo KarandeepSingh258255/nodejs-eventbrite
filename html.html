@@ -4,99 +4,575 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Events</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" >
+  <link rel="stylesheet" href="css/styles.css" />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Playfair+Display:wght@400;600&display=swap');
+
+    :root {
+      --paper: #f4f1e8;
+      --ink: #1f1a14;
+      --tile-border: #e3ddd1;
+      --green: #76c11f;
+      --green-dark: #5fa510;
+    }
 
     body {
       margin: 0;
-      font-family: "Georgia", fantasy;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Playfair Display", "Times New Roman", serif;
     }
     .wrap {
-      max-width: 980px;
+      max-width: 1220px;
       margin: 48px auto;
-      padding: 0 20px;
+      padding: 24px 20px 80px;
     }
     .hero {
-      background: var(--card);
-      border: 2px solid var(--ink);
-      padding: 28px;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
     .hero h1 {
-      margin: 0 0 8px;
-      font-size: clamp(28px, 4vw, 44px);
+      margin: 0 0 6px;
+      font-size: clamp(30px, 4vw, 44px);
+      letter-spacing: 1px;
     }
     .hero p {
       margin: 0;
-      font-size: 18px;
+      font-size: 16px;
+      opacity: 0.75;
     }
     .events {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 26px;
+      align-items: stretch;
     }
-    .card {
-      background: var(--card);
-      border: 2px solid var(--ink);
-      padding: 16px;
-      box-shadow: 6px 6px 0 var(--ink);
+    @media (max-width: 980px) {
+      .events {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
-    .card h3 {
-      margin: 0 0 8px;
-      font-size: 20px;
+    @media (max-width: 640px) {
+      .events {
+        grid-template-columns: 1fr;
+      }
     }
-    .meta {
+    .events-section {
+      margin-bottom: 36px;
+    }
+    .events-section h2 {
+      margin: 0 0 16px;
+      font-size: 22px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .tile {
+      background: #fff;
+      border: 1px solid var(--tile-border);
+      box-shadow: 0 10px 24px rgba(31, 26, 20, 0.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .tile-media {
+      position: relative;
+      height: 200px;
+      background: #d9d2c6;
+    }
+    .tile-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .tile-body {
+      padding: 18px 18px 24px;
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      flex: 1;
+    }
+    .tile-date-card {
+      background: #fff;
+      border: 2px solid var(--green);
+      padding: 18px 10px;
+      text-align: center;
+      font-family: "Oswald", "Arial Narrow", sans-serif;
+    }
+    .tile-date-day {
+      font-size: 42px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .tile-date-month {
       font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .tile-date-year {
+      font-size: 13px;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .tile-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .tile-link {
+      color: inherit;
+      text-decoration: none;
+      display: block;
+    }
+    .tile-body h3 {
       margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .tile-meta-row {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-family: "Oswald", "Arial Narrow", sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .tile-meta-row i {
+      margin-right: 6px;
+      color: var(--green-dark);
+    }
+    .tile-description {
+      margin: 0 0 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #4a433c;
+    }
+    .tile-read-more {
+      display: inline-block;
+      margin-left: 6px;
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid var(--ink);
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    .tile-time {
+      margin: 0;
+      font-family: "Oswald", "Arial Narrow", sans-serif;
+      font-size: 14px;
+      letter-spacing: 1.2px;
+    }
+    .tile-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 4px;
     }
     .link {
+      display: inline-block;
+      margin-top: 14px;
       color: var(--ink);
       text-decoration: none;
-      border-bottom: 2px solid var(--accent);
+      border-bottom: 2px solid var(--green);
+      font-family: "Oswald", "Arial Narrow", sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .link-secondary {
+      margin-left: 12px;
+      border-bottom-color: var(--ink);
+      opacity: 0.75;
+    }
+    .load-more {
+      margin: 18px auto 0;
+      display: block;
+      padding: 10px 24px;
+      border: 2px solid var(--ink);
+      background: transparent;
+      font-family: "Oswald", "Arial Narrow", sans-serif;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .load-more[hidden] {
+      display: none;
     }
     .empty {
       background: #fff;
-      border: 2px dashed var(--ink);
-      padding: 16px;
+      border: 1px dashed var(--tile-border);
+      padding: 20px;
     }
   </style>
 </head>
-<body>
+<body class="events-page">
+  <header class="main-header clearfix">
+
+    <div class="top-bar">
+
+      <div class="container">
+
+        <div class="row clearfix">
+
+          <div class="col-md-6 col-sm-12">
+
+            <span class="top-phone-no">
+              <i class="fa fa-phone-square"></i> 
+              +093-120-525-9162
+            </span>
+
+            <span class="top-email-info">
+              <i class="fa fa-paper-plane"></i>
+              <a href="#">info@example.com</a>
+            </span>
+
+          </div> <!-- end col-sm-6  -->
+
+          <div class="col-md-6 col-sm-12 text-right hidden-xs top-donation-btn-container">
+
+            <a href="donation.html" title="Donate Now" class="btn top-donate-btn" >DONATE NOW</a>
+
+          </div> <!-- end col-sm-6  -->
+
+        </div> <!-- end .row  -->
+
+      </div> <!--  end .container -->
+
+    </div> <!--  end .top-bar  -->
+    
+    <section class="header-wrapper navgiation-wrapper">
+    
+      <div class="navbar navbar-default">			
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="logo" href="index.html"><img alt="" src="images/logo.png"></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="drop">
+                <a href="index.html" title="Home Layout 01">Home</a>
+                <ul class="drop-down">
+                  <li><a href="index.html" title="Home Layout 01">Home Layout 1</a></li>
+                  <li><a href="home-2.html" title="Home Layout 02">Home Layout 2</a></li>
+                </ul>
+              </li>
+              <li class="drop"><a href="#">Pages</a>
+                <ul class="drop-down">
+                  <li><a href="about-us.html" title="About Us">About Us</a></li>
+                  <li><a href="service.html" title="Services">Services</a></li>
+                  <li class="drop"><a href="#">Gallery</a>
+                     <ul class="drop-down level3">
+                      <li><a href="gallery-1.html">Layout 01</a></li> 
+                      <li><a href="gallery-2.html">Layout 02</a></li> 
+                      <li><a href="gallery-3.html">Layout 03</a></li> 
+                    </ul>
+                  </li>
+                  <li><a href="donation.html" title="Donation">Donation</a></li> 
+                  <li><a href="404.html" title="404 Page">404 Page</a></li> 
+                  <li class="drop"><a href="#">Level 3</a>
+                    <ul class="drop-down level3">
+                      <li><a href="#">Level 3.1</a></li>
+                      <li><a href="#">Level 3.2</a></li>
+                      <li><a href="#">Level 3.3</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              
+              <li>
+                <a href="#">Causes</a>
+                <ul class="drop-down">
+                  <li><a href="causes.html">All Causes</a></li>
+                  <li><a href="cause-single.html">Single Cause</a></li>
+                </ul>
+              </li>
+              
+              <li>
+                <a href="#">Events</a>
+                <ul class="drop-down">
+                  <li><a href="events.html">All Events</a></li>
+                  <li><a href="event-single.html">Single Event</a></li>
+                </ul>
+              </li>
+              
+              <li>
+                <a href="#">Blog</a>
+                <ul class="drop-down">
+                  <li><a href="blog.html">All Posts</a></li> 
+                  <li><a href="single.html">Single Page</a></li>
+                </ul>
+              </li>
+              
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+    </section>
+
+
+  </header> <!-- end main-header  -->
+
   <div class="wrap">
     <div class="hero">
       <h1>Events</h1>
       <p>Live events auto-refresh every minute.</p>
     </div>
 
-    <div id="events" class="events"></div>
+    <div class="events-section">
+      <h2>Upcoming Events</h2>
+      <div id="upcoming-events" class="events"></div>
+      <button id="upcoming-load" class="load-more" type="button">Load events</button>
+    </div>
+
+    <div class="events-section">
+      <h2>Past Events</h2>
+      <div id="past-events" class="events"></div>
+      <button id="past-load" class="load-more" type="button">Load events</button>
+    </div>
   </div>
+
+  <section class="section-content-block newsletter-area-bg">
+
+    <div class="container">
+
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-sm-12 text-center">
+          <div class="">
+            <h3>NEWSLETTER SUBSCRIBE</h3>
+            <form id="mc-form" class="mc-form fix" action="#">
+              <div class="newsletter-form">
+                <input id="mc-email" name="EMAIL" placeholder="Email Address..." type="email">
+                <button id="mc-submit" type="submit">
+                  <i class="fa fa-chevron-right"></i>
+                </button>
+              </div>
+            </form>
+            <div class="mailchimp-alerts text-centre fix">
+              <div class="mailchimp-submitting"></div>
+              <div class="mailchimp-success"></div>
+              <div class="mailchimp-error"></div>
+            </div>
+            <p>Signup for regular newsletter and stay upto date with our latest news</p>
+          </div>
+        </div> <!-- end .col-md-8  -->
+      </div> <!-- end .row  --> 
+
+    </div>
+
+  </section> <!-- end .cta-section-3  -->
   <script>
     const POLL_MS = 60000;
 
-    function formatLocal(eventTime) {
-      if (!eventTime?.local || !eventTime?.timezone) return 'TBD';
-      return `${eventTime.local} (${eventTime.timezone})`;
+    function formatDate(eventTime) {
+      if (!eventTime?.local) return 'Date TBD';
+      const date = new Date(eventTime.local);
+      if (Number.isNaN(date.getTime())) return 'Date TBD';
+      return date.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
     }
 
-    function renderEvents(events) {
-      const container = document.getElementById('events');
-      if (!events.length) {
-        container.innerHTML = '<div class="empty">No published events yet.</div>';
-        return;
+    function formatDateParts(eventTime) {
+      if (!eventTime?.local) return { day: '--', month: '---', year: '----' };
+      const date = new Date(eventTime.local);
+      if (Number.isNaN(date.getTime())) return { day: '--', month: '---', year: '----' };
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = date.toLocaleDateString('en-US', { month: 'short' });
+      const year = String(date.getFullYear());
+      return { day, month, year };
+    }
+
+    function formatTime(eventTime) {
+      if (!eventTime?.local) return 'TBD';
+      const date = new Date(eventTime.local);
+      if (Number.isNaN(date.getTime())) return 'TBD';
+      return date
+        .toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+        .replace(' AM', 'am')
+        .replace(' PM', 'pm');
+    }
+
+    function formatTimeRange(start, end) {
+      const startTime = formatTime(start);
+      const endTime = formatTime(end);
+      if (startTime === 'TBD' && endTime === 'TBD') return 'Time TBD';
+      if (endTime === 'TBD') return startTime;
+      return `${startTime} - ${endTime}`;
+    }
+
+    function formatLocation(venue) {
+      if (!venue?.address) return 'Location TBD';
+      const parts = [
+        venue.address.city,
+        venue.address.region,
+        venue.address.country,
+      ].filter(Boolean);
+      return parts.length ? parts.join(', ') : 'Location TBD';
+    }
+
+    function getDescriptionPreview(event) {
+      const raw =
+        event.summary ||
+        event.description?.text ||
+        event.description?.html ||
+        '';
+      const text = raw.replace(/<[^>]*>/g, '').trim();
+      if (!text) {
+        return { text: 'No description available.', truncated: false };
       }
-      container.innerHTML = events.map((event) => {
-        const start = formatLocal(event.start);
-        const end = formatLocal(event.end);
+      const words = text.split(/\s+/).filter(Boolean);
+      if (words.length <= 30) {
+        return { text, truncated: false };
+      }
+      return { text: `${words.slice(0, 30).join(' ')}...`, truncated: true };
+    }
+
+    function formatTicketInfo(event) {
+      const capacity = Number.isFinite(event.capacity) ? ` · Capacity ${event.capacity}` : '';
+      if (event.is_free === true) return `Tickets: Free RSVP${capacity}`;
+      if (event.is_free === false) return `Tickets: Paid${capacity}`;
+      return `Tickets: Info TBD${capacity}`;
+    }
+
+    function buildTile(event) {
+        const date = formatDate(event.start);
+        const dateParts = formatDateParts(event.start);
+        const timeRange = formatTimeRange(event.start, event.end);
+        const location = formatLocation(event.venue);
+        const description = getDescriptionPreview(event);
+        const ticketInfo = formatTicketInfo(event);
         const name = event.name || 'Untitled Event';
         const url = event.url || '#';
+        const detailUrl = `event-single.html?eventId=${encodeURIComponent(event.id)}`;
+        const image =
+          event.logo?.url ||
+          event.logo?.original?.url ||
+          'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=60';
+        const host =
+          event.organizer?.name ||
+          event.organizer_name ||
+          event.organization?.name ||
+          'Event Organizer';
         return `
-          <div class="card">
-            <h3>${name}</h3>
-            <p class="meta">Start: ${start}</p>
-            <p class="meta">End: ${end}</p>
-            <a class="link" href="${url}" target="_blank" rel="noopener">View on Eventbrite</a>
+          <div class="tile">
+            <a class="tile-link" href="${detailUrl}">
+              <div class="tile-media">
+                <img src="${image}" alt="${name}">
+              </div>
+            </a>
+            <div class="tile-body">
+              <div class="tile-date-card" aria-label="${date}">
+                <div class="tile-date-day">${dateParts.day}</div>
+                <div class="tile-date-month">${dateParts.month}</div>
+                <div class="tile-date-year">${dateParts.year}</div>
+              </div>
+              <div class="tile-content">
+                <a class="tile-link" href="${detailUrl}">
+                  <h3>${name}</h3>
+                </a>
+                <div class="tile-meta-row">
+                  <span><i class="fa fa-clock-o"></i>${timeRange}</span>
+                  <span><i class="fa fa-map-marker"></i>${location}</span>
+                </div>
+                <p class="tile-description">
+                  ${description.text}
+                  ${description.truncated ? `<a class="tile-read-more" href="${detailUrl}">Read more..</a>` : ''}
+                </p>
+                <div class="tile-meta-row">
+                  <span><i class="fa fa-ticket"></i>${ticketInfo}</span>
+                  <span><i class="fa fa-user"></i>${host}</span>
+                </div>
+                <div class="tile-actions">
+                  <a class="link" href="${detailUrl}">View details</a>
+                  <a class="link link-secondary" href="${url}" target="_blank" rel="noopener">RSVP</a>
+                </div>
+              </div>
+            </div>
           </div>
         `;
-      }).join('');
+    }
+
+    const DISPLAY_LIMIT = 3;
+    let upcomingVisible = DISPLAY_LIMIT;
+    let pastVisible = DISPLAY_LIMIT;
+    let eventsCache = [];
+    let loadMoreWired = false;
+
+    function renderEvents(events) {
+      const upcomingContainer = document.getElementById('upcoming-events');
+      const pastContainer = document.getElementById('past-events');
+      const upcomingLoad = document.getElementById('upcoming-load');
+      const pastLoad = document.getElementById('past-load');
+      const now = new Date();
+
+      const upcoming = [];
+      const past = [];
+
+      events.forEach((event) => {
+        const startLocal = event.start?.local;
+        const startDate = startLocal ? new Date(startLocal) : null;
+        if (!startDate || Number.isNaN(startDate.getTime())) {
+          upcoming.push(event);
+          return;
+        }
+        if (startDate >= now) {
+          upcoming.push(event);
+        } else {
+          past.push(event);
+        }
+      });
+
+      if (!upcoming.length) {
+        upcomingContainer.innerHTML = '<div class="empty">No upcoming Events</div>';
+        upcomingLoad.hidden = true;
+      } else {
+        const upcomingSlice = upcoming.slice(0, upcomingVisible);
+        upcomingContainer.innerHTML = upcomingSlice.map(buildTile).join('');
+        upcomingLoad.hidden = upcomingVisible >= upcoming.length;
+      }
+
+      if (!past.length) {
+        pastContainer.innerHTML = '<div class="empty">No past events yet.</div>';
+        pastLoad.hidden = true;
+      } else {
+        const pastSlice = past.slice(0, pastVisible);
+        pastContainer.innerHTML = pastSlice.map(buildTile).join('');
+        pastLoad.hidden = pastVisible >= past.length;
+      }
+    }
+
+    function wireLoadMore() {
+      if (loadMoreWired) return;
+      const upcomingLoad = document.getElementById('upcoming-load');
+      const pastLoad = document.getElementById('past-load');
+      upcomingLoad.addEventListener('click', () => {
+        upcomingVisible += DISPLAY_LIMIT;
+        renderEvents(eventsCache);
+      });
+      pastLoad.addEventListener('click', () => {
+        pastVisible += DISPLAY_LIMIT;
+        renderEvents(eventsCache);
+      });
+      loadMoreWired = true;
     }
 
     async function fetchEvents() {
@@ -104,10 +580,14 @@
         const res = await fetch('/events');
         if (!res.ok) throw new Error('Failed to load events');
         const data = await res.json();
-        renderEvents(data.events || []);
+        eventsCache = data.events || [];
+        renderEvents(eventsCache);
+        wireLoadMore();
       } catch (error) {
-        const container = document.getElementById('events');
-        container.innerHTML = '<div class="empty">Error loading events.</div>';
+        const upcomingContainer = document.getElementById('upcoming-events');
+        const pastContainer = document.getElementById('past-events');
+        upcomingContainer.innerHTML = '<div class="empty">Error loading events.</div>';
+        pastContainer.innerHTML = '';
       }
     }
 
