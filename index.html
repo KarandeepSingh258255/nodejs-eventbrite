@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Events</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" >
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/events.css" />
+</head>
+<body class="events-page">
+  <header class="main-header clearfix">
+
+    <div class="top-bar">
+
+      <div class="container">
+
+        <div class="row clearfix">
+
+          <div class="col-md-6 col-sm-12">
+
+            <span class="top-phone-no">
+              <i class="fa fa-phone-square"></i> 
+              +093-120-525-9162
+            </span>
+
+            <span class="top-email-info">
+              <i class="fa fa-paper-plane"></i>
+              <a href="#">info@example.com</a>
+            </span>
+
+          </div> <!-- end col-sm-6  -->
+
+          <div class="col-md-6 col-sm-12 text-right hidden-xs top-donation-btn-container">
+
+            <a href="donation.html" title="Donate Now" class="btn top-donate-btn" >DONATE NOW</a>
+
+          </div> <!-- end col-sm-6  -->
+
+        </div> <!-- end .row  -->
+
+      </div> <!--  end .container -->
+
+    </div> <!--  end .top-bar  -->
+    
+    <section class="header-wrapper navgiation-wrapper">
+    
+      <div class="navbar navbar-default">			
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="logo" href="index.html"><img alt="" src="images/logo.png"></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="drop">
+                <a href="index.html" title="Home Layout 01">Home</a>
+                <ul class="drop-down">
+                  <li><a href="index.html" title="Home Layout 01">Home Layout 1</a></li>
+                  <li><a href="home-2.html" title="Home Layout 02">Home Layout 2</a></li>
+                </ul>
+              </li>
+              <li class="drop"><a href="#">Pages</a>
+                <ul class="drop-down">
+                  <li><a href="about-us.html" title="About Us">About Us</a></li>
+                  <li><a href="service.html" title="Services">Services</a></li>
+                  <li class="drop"><a href="#">Gallery</a>
+                     <ul class="drop-down level3">
+                      <li><a href="gallery-1.html">Layout 01</a></li> 
+                      <li><a href="gallery-2.html">Layout 02</a></li> 
+                      <li><a href="gallery-3.html">Layout 03</a></li> 
+                    </ul>
+                  </li>
+                  <li><a href="donation.html" title="Donation">Donation</a></li> 
+                  <li><a href="404.html" title="404 Page">404 Page</a></li> 
+                  <li class="drop"><a href="#">Level 3</a>
+                    <ul class="drop-down level3">
+                      <li><a href="#">Level 3.1</a></li>
+                      <li><a href="#">Level 3.2</a></li>
+                      <li><a href="#">Level 3.3</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              
+              <li>
+                <a href="#">Causes</a>
+                <ul class="drop-down">
+                  <li><a href="causes.html">All Causes</a></li>
+                  <li><a href="cause-single.html">Single Cause</a></li>
+                </ul>
+              </li>
+              
+              <li>
+                <a href="#">Events</a>
+                <ul class="drop-down">
+                  <li><a href="events.html">All Events</a></li>
+                  <li><a href="event-single.html">Single Event</a></li>
+                </ul>
+              </li>
+              
+              <li>
+                <a href="#">Blog</a>
+                <ul class="drop-down">
+                  <li><a href="blog.html">All Posts</a></li> 
+                  <li><a href="single.html">Single Page</a></li>
+                </ul>
+              </li>
+              
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+    </section>
+
+
+  </header> <!-- end main-header  -->
+
+  <div class="wrap">
+    <div class="hero">
+      <h1>Events</h1>
+      <p>Live events auto-refresh every minute.</p>
+    </div>
+
+    <div class="events-section">
+      <h2>Upcoming Events</h2>
+      <div id="upcoming-events" class="events"></div>
+      <button id="upcoming-load" class="load-more" type="button">Load events</button>
+    </div>
+
+    <div class="events-section">
+      <h2>Past Events</h2>
+      <div id="past-events" class="events"></div>
+      <button id="past-load" class="load-more" type="button">Load events</button>
+    </div>
+  </div>
+
+  <section class="section-content-block newsletter-area-bg">
+
+    <div class="container">
+
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-sm-12 text-center">
+          <div class="">
+            <h3>NEWSLETTER SUBSCRIBE</h3>
+            <form id="mc-form" class="mc-form fix" action="#">
+              <div class="newsletter-form">
+                <input id="mc-email" name="EMAIL" placeholder="Email Address..." type="email">
+                <button id="mc-submit" type="submit">
+                  <i class="fa fa-chevron-right"></i>
+                </button>
+              </div>
+            </form>
+            <div class="mailchimp-alerts text-centre fix">
+              <div class="mailchimp-submitting"></div>
+              <div class="mailchimp-success"></div>
+              <div class="mailchimp-error"></div>
+            </div>
+            <p>Signup for regular newsletter and stay upto date with our latest news</p>
+          </div>
+        </div> <!-- end .col-md-8  -->
+      </div> <!-- end .row  --> 
+
+    </div>
+
+  </section> <!-- end .cta-section-3  -->
+  <script src="js/events.js"></script>
+</body>
+</html>
