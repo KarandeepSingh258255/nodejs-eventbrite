@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Playfair+Display:wght@400;600&display=swap');
+
+:root {
+  --paper: #f4f1e8;
+  --ink: #1f1a14;
+  --tile-border: #e3ddd1;
+  --green: #76c11f;
+  --green-dark: #5fa510;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Playfair Display", "Times New Roman", serif;
+}
+.wrap {
+  max-width: 1220px;
+  margin: 48px auto;
+  padding: 24px 20px 80px;
+}
+.hero {
+  margin-bottom: 28px;
+}
+.hero h1 {
+  margin: 0 0 6px;
+  font-size: clamp(30px, 4vw, 44px);
+  letter-spacing: 1px;
+}
+.hero p {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.75;
+}
+.events {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+  align-items: stretch;
+}
+@media (max-width: 980px) {
+  .events {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .events {
+    grid-template-columns: 1fr;
+  }
+}
+.events-section {
+  margin-bottom: 36px;
+}
+.events-section h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.tile {
+  background: #fff;
+  border: 1px solid var(--tile-border);
+  box-shadow: 0 10px 24px rgba(31, 26, 20, 0.12);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.tile-media {
+  position: relative;
+  height: 200px;
+  background: #d9d2c6;
+}
+.tile-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.tile-body {
+  padding: 18px 18px 24px;
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  flex: 1;
+}
+.tile-date-card {
+  background: #fff;
+  border: 2px solid var(--green);
+  padding: 18px 10px;
+  text-align: center;
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+}
+.tile-date-day {
+  font-size: 42px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.tile-date-month {
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.tile-date-year {
+  font-size: 13px;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.tile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tile-link {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+.tile-body h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.tile-meta-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.tile-meta-row i {
+  margin-right: 6px;
+  color: var(--green-dark);
+}
+.tile-description {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #4a433c;
+}
+.tile-read-more {
+  display: inline-block;
+  margin-left: 6px;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--ink);
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+.tile-time {
+  margin: 0;
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+  font-size: 14px;
+  letter-spacing: 1.2px;
+}
+.tile-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 4px;
+}
+.link {
+  display: inline-block;
+  margin-top: 14px;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 2px solid var(--green);
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.link-secondary {
+  margin-left: 12px;
+  border-bottom-color: var(--ink);
+  opacity: 0.75;
+}
+.load-more {
+  margin: 18px auto 0;
+  display: block;
+  padding: 10px 24px;
+  border: 2px solid var(--ink);
+  background: transparent;
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.load-more[hidden] {
+  display: none;
+}
+.empty {
+  background: #fff;
+  border: 1px dashed var(--tile-border);
+  padding: 20px;
+}
