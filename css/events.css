@@ -34,14 +34,9 @@ body {
 }
 .events {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 26px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
   align-items: stretch;
-}
-@media (max-width: 980px) {
-  .events {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 @media (max-width: 640px) {
   .events {
@@ -202,4 +197,11 @@ body {
   background: #fff;
   border: 1px dashed var(--tile-border);
   padding: 20px;
+  text-align: center;
+  grid-column: 1 / -1;
+}
+
+.ce_event_wrap .ce_event_des_wrap .ce_event_date,
+.default_width .ce_event_des_wrap .ce_event_date {
+  margin-left: -20px;
 }
